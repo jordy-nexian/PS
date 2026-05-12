@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MSP Call Copilot</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>MSP Call Copilot</h1>
+    <div id="status" class="status idle">No active call</div>
+  </header>
+
+  <main>
+    <section class="pane transcript-pane">
+      <h2>Live transcript</h2>
+      <div id="transcript" class="transcript"></div>
+    </section>
+
+    <aside class="pane chat-pane">
+      <h2>Ask AI</h2>
+      <div id="chat" class="chat"></div>
+      <form id="ask-form" class="ask-form">
+        <textarea id="question" placeholder="Ask a question about the live call... (Cmd/Ctrl+Enter to send)" rows="3"></textarea>
+        <button type="submit" id="ask-btn">Ask</button>
+      </form>
+    </aside>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

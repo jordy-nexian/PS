@@ -41,7 +41,11 @@ app.post('/voice', (req, res) => {
     url: `wss://${publicHost}/stream`,
     track: 'both_tracks',
   });
-  if (twilioNumber) {
+
+  if (process.env.TEST_MODE === 'true') {
+    response.say('Solo test mode. Start speaking. The call will stay open for an hour or until you hang up.');
+    response.pause({ length: 3600 });
+  } else if (twilioNumber) {
     response.dial({ callerId: twilioNumber }, engineerNumber);
   } else {
     response.dial(engineerNumber);

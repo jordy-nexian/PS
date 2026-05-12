@@ -35,6 +35,7 @@ Customer ──► Twilio number ──► /voice (TwiML: <Start><Stream> + <Dia
 | `TWILIO_PHONE_NUMBER` | Your Twilio phone number in E.164. Set as `callerId` on `<Dial>` so outbound bridge calls have a verified From (required for trial accounts; good hygiene on paid). |
 | `TWILIO_ACCOUNT_SID` | From Twilio Console → Account → API keys & tokens. Required for engineer-initiated outbound calls via the dashboard. |
 | `TWILIO_AUTH_TOKEN` | Auth token paired with the SID. Same page as above. |
+| `TEST_MODE` | If `true`, `/voice` skips `<Dial>` and keeps the call open for the caller to talk solo — useful for proving transcription without a second phone. Unset/`false` for normal customer↔engineer bridge. |
 | `AZURE_SPEECH_KEY` | Azure AI Speech resource key |
 | `AZURE_SPEECH_REGION` | Azure AI Speech region (e.g. `uksouth`) |
 | `AZURE_SPEECH_LANGUAGE` | BCP-47 locale (default `en-GB`) |

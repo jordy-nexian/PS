@@ -1,0 +1,51 @@
+name: Build and deploy MSP copilot
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  IMAGE: ghcr.io/jordy-nexian/ps
+  CONTAINER_APP: ca-nex-mspapp-01
+  RESOURCE_GROUP: rg-nex-test-play-uks-001
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.CANEXMSPAPP01_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.CANEXMSPAPP01_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.CANEXMSPAPP01_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Update Container App image
+        run: |
+          az containerapp update \
+            --name "$CONTAINER_APP" \
+            --resource-group "$RESOURCE_GROUP" \
+            --image "${{ env.IMAGE }}:${{ github.sha }}"

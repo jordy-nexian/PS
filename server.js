@@ -13,6 +13,7 @@ const { ask } = require('./lib/azureOpenAI');
 const port = process.env.PORT || 3000;
 const publicHost = process.env.PUBLIC_HOST;
 const engineerNumber = process.env.ENGINEER_PHONE_NUMBER;
+const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
@@ -34,7 +35,11 @@ app.post('/voice', (req, res) => {
     url: `wss://${publicHost}/stream`,
     track: 'both_tracks',
   });
-  response.dial(engineerNumber);
+  if (twilioNumber) {
+    response.dial({ callerId: twilioNumber }, engineerNumber);
+  } else {
+    response.dial(engineerNumber);
+  }
 
   res.type('text/xml').send(response.toString());
 });

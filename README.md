@@ -32,6 +32,7 @@ Customer ──► Twilio number ──► /voice (TwiML: <Start><Stream> + <Dia
 | `PORT` | HTTP port (default 3000) |
 | `PUBLIC_HOST` | Public hostname Twilio reaches, e.g. `myapp.azurecontainerapps.io`. Used to build the `wss://` Stream URL. |
 | `ENGINEER_PHONE_NUMBER` | E.164 number to bridge calls to (e.g. `+447700900123`) |
+| `TWILIO_PHONE_NUMBER` | Your Twilio phone number in E.164. Set as `callerId` on `<Dial>` so outbound bridge calls have a verified From (required for trial accounts; good hygiene on paid). |
 | `AZURE_SPEECH_KEY` | Azure AI Speech resource key |
 | `AZURE_SPEECH_REGION` | Azure AI Speech region (e.g. `uksouth`) |
 | `AZURE_SPEECH_LANGUAGE` | BCP-47 locale (default `en-GB`) |

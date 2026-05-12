@@ -24,6 +24,17 @@ main { flex: 1; display: grid; grid-template-columns: 1fr 380px; min-height: 0; 
 .transcript .line.partial { opacity: 0.55; font-style: italic; }
 
 .chat-pane { background: #11141c; }
+.chat-pane h2.ask-heading { margin-top: 16px; }
+
+.call-form { display: flex; gap: 8px; margin-bottom: 6px; }
+.call-form input { flex: 1; background: #1a1e29; color: #e7e9ee; border: 1px solid #2a2f3a; border-radius: 6px; padding: 8px 10px; font: inherit; }
+.call-form input:focus { outline: none; border-color: #4a6cf7; }
+.call-form button { background: #4a6cf7; color: white; border: none; border-radius: 6px; padding: 8px 14px; font-weight: 600; cursor: pointer; }
+.call-form button:disabled { background: #2a2f3a; color: #6a707b; cursor: not-allowed; }
+.call-status { font-size: 12px; color: #9aa1ad; min-height: 16px; }
+.call-status.error { color: #f08d8d; }
+.call-status.success { color: #6ce28b; }
+
 .chat { flex: 1; overflow-y: auto; font-size: 13px; margin-bottom: 12px; }
 .chat .qa { margin-bottom: 14px; }
 .chat .q { color: #e7e9ee; font-weight: 600; margin-bottom: 4px; }

@@ -19,7 +19,14 @@
     </section>
 
     <aside class="pane chat-pane">
-      <h2>Ask AI</h2>
+      <h2>Call customer</h2>
+      <form id="call-form" class="call-form">
+        <input id="call-to" type="tel" placeholder="+447700900123" autocomplete="off" />
+        <button type="submit" id="call-btn">Call</button>
+      </form>
+      <div id="call-status-line" class="call-status"></div>
+
+      <h2 class="ask-heading">Ask AI</h2>
       <div id="chat" class="chat"></div>
       <form id="ask-form" class="ask-form">
         <textarea id="question" placeholder="Ask a question about the live call... (Cmd/Ctrl+Enter to send)" rows="3"></textarea>

@@ -4,6 +4,10 @@ const chatEl = document.getElementById('chat');
 const askForm = document.getElementById('ask-form');
 const questionEl = document.getElementById('question');
 const askBtn = document.getElementById('ask-btn');
+const callForm = document.getElementById('call-form');
+const callToEl = document.getElementById('call-to');
+const callBtn = document.getElementById('call-btn');
+const callStatusEl = document.getElementById('call-status-line');
 
 let activeCallSid = null;
 const partialBySpeaker = new Map();
@@ -120,6 +124,31 @@ askForm.addEventListener('submit', (e) => {
 questionEl.addEventListener('keydown', (e) => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
     askForm.requestSubmit();
+  }
+});
+
+callForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const to = callToEl.value.trim();
+  if (!to) return;
+  callBtn.disabled = true;
+  callStatusEl.className = 'call-status';
+  callStatusEl.textContent = `Dialling ${to}…`;
+  try {
+    const res = await fetch('/api/call', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Call failed');
+    callStatusEl.className = 'call-status success';
+    callStatusEl.textContent = `Call ${data.callSid.slice(-6)} — ${data.status}`;
+  } catch (err) {
+    callStatusEl.className = 'call-status error';
+    callStatusEl.textContent = `Error: ${err.message}`;
+  } finally {
+    callBtn.disabled = false;
   }
 });
 

@@ -33,6 +33,8 @@ Customer ──► Twilio number ──► /voice (TwiML: <Start><Stream> + <Dia
 | `PUBLIC_HOST` | Public hostname Twilio reaches, e.g. `myapp.azurecontainerapps.io`. Used to build the `wss://` Stream URL. |
 | `ENGINEER_PHONE_NUMBER` | E.164 number to bridge calls to (e.g. `+447700900123`) |
 | `TWILIO_PHONE_NUMBER` | Your Twilio phone number in E.164. Set as `callerId` on `<Dial>` so outbound bridge calls have a verified From (required for trial accounts; good hygiene on paid). |
+| `TWILIO_ACCOUNT_SID` | From Twilio Console → Account → API keys & tokens. Required for engineer-initiated outbound calls via the dashboard. |
+| `TWILIO_AUTH_TOKEN` | Auth token paired with the SID. Same page as above. |
 | `AZURE_SPEECH_KEY` | Azure AI Speech resource key |
 | `AZURE_SPEECH_REGION` | Azure AI Speech region (e.g. `uksouth`) |
 | `AZURE_SPEECH_LANGUAGE` | BCP-47 locale (default `en-GB`) |

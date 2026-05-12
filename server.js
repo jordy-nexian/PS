@@ -4,7 +4,8 @@ const http = require('http');
 const path = require('path');
 const express = require('express');
 const { WebSocketServer } = require('ws');
-const { twiml: { VoiceResponse } } = require('twilio');
+const twilio = require('twilio');
+const { twiml: { VoiceResponse } } = twilio;
 
 const transcriptBus = require('./lib/transcriptBus');
 const { handleTwilioStream } = require('./lib/twilioStream');
@@ -14,6 +15,11 @@ const port = process.env.PORT || 3000;
 const publicHost = process.env.PUBLIC_HOST;
 const engineerNumber = process.env.ENGINEER_PHONE_NUMBER;
 const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
+const twilioSid = process.env.TWILIO_ACCOUNT_SID;
+const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+const twilioClient = twilioSid && twilioAuthToken ? twilio(twilioSid, twilioAuthToken) : null;
+
+const E164 = /^\+[1-9]\d{6,14}$/;
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
@@ -102,6 +108,34 @@ app.get('/api/events', (req, res) => {
     transcriptBus.off('line', onLine);
     transcriptBus.off('call-ended', onEnded);
   });
+});
+
+app.post('/api/call', async (req, res) => {
+  const { to } = req.body || {};
+  if (!to || !E164.test(to)) {
+    return res.status(400).json({ error: 'Provide "to" in E.164 format, e.g. +447700900123' });
+  }
+  if (!twilioClient) {
+    return res.status(500).json({ error: 'Twilio not configured (set TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN)' });
+  }
+  if (!twilioNumber || !publicHost) {
+    return res.status(500).json({ error: 'TWILIO_PHONE_NUMBER and PUBLIC_HOST must be set' });
+  }
+
+  try {
+    const call = await twilioClient.calls.create({
+      to,
+      from: twilioNumber,
+      url: `https://${publicHost}/voice`,
+      method: 'POST',
+      statusCallback: `https://${publicHost}/call-status`,
+      statusCallbackMethod: 'POST',
+    });
+    res.json({ callSid: call.sid, status: call.status, to });
+  } catch (err) {
+    console.error('[api/call] error:', err);
+    res.status(500).json({ error: err.message, code: err.code });
+  }
 });
 
 app.post('/api/ask', async (req, res) => {

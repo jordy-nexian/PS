@@ -9,7 +9,7 @@ const { twiml: { VoiceResponse } } = twilio;
 
 const transcriptBus = require('./lib/transcriptBus');
 const { handleTwilioStream } = require('./lib/twilioStream');
-const { ask } = require('./lib/azureOpenAI');
+const { ask } = require('./lib/foundryAgent');
 
 const port = process.env.PORT || 3000;
 const publicHost = process.env.PUBLIC_HOST;
@@ -54,11 +54,14 @@ app.post('/voice', (req, res) => {
   res.type('text/xml').send(response.toString());
 });
 
+const responseIdByCall = new Map();
+
 app.post('/call-status', (req, res) => {
   const { CallSid, CallStatus } = req.body;
   console.log(`[call-status] ${CallSid} → ${CallStatus}`);
   if (CallStatus === 'completed' || CallStatus === 'failed' || CallStatus === 'canceled') {
     transcriptBus.endCall(CallSid);
+    responseIdByCall.delete(CallSid);
   }
   res.sendStatus(204);
 });
@@ -150,8 +153,13 @@ app.post('/api/ask', async (req, res) => {
   const transcript = targetSid ? transcriptBus.getTranscriptText(targetSid) : '';
 
   try {
-    const answer = await ask({ transcript, question });
-    res.json({ answer });
+    const { text, responseId } = await ask({
+      transcript,
+      question,
+      previousResponseId: targetSid ? responseIdByCall.get(targetSid) : undefined,
+    });
+    if (targetSid && responseId) responseIdByCall.set(targetSid, responseId);
+    res.json({ answer: text });
   } catch (err) {
     console.error('[ask] error:', err);
     res.status(500).json({ error: err.message });
